@@ -6,13 +6,19 @@ class DiskUsage < LibratoMetricsClient::Plugin
 
     raise "Could not run df" unless $?.success?
 
+    hostname = Socket.gethostname[/^([^\.]+)/, 1]
+
     md = LINE_MATCH.match(disk_output)
     begin
       next if md[1] == 'Filesystem'
       next unless md[1] =~ %r{^/dev/}
 
-      name = md[6]
-      source = "#{Socket.gethostname}:#{name}"
+      name = md[6].sub(%r{^/+}, '').gsub(%r{/+}, '-')
+      if name == ''
+        name = 'root'
+      end
+
+      source = "#{hostname}:#{name}"
 
       gauge :size, md[2],  :source => source
       gauge :used, md[3],  :source => source
