@@ -31,7 +31,7 @@ Install a plugin:
     
 Add a check for the plugin:
 
-    $ librato_metrics_client probe add local_check plugin:http_check -s host=localhost
+    $ librato_metrics_client probe add local_check http_check -s host=localhost
 
 Run the agent:
 
