@@ -13,8 +13,16 @@ There are a few goals:
 
 We'll see how it goes.
 
+## Working Commands
 
-## Example Commands
+Run a probe:
+
+    $ bundle exec librato_metrics_client -u email@gmail.com \
+        -t 9cbedb645496b9a6b13c63c4bc3d1b95f02b3dbb probe run \
+        --prefix=disk_usage plugins/disk_usage.rb
+
+
+## Possible Future Example Commands
 
 
 Install a plugin:
