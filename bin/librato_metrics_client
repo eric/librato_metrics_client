@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require 'librato_metrics_client'
+require 'librato_metrics_client/cli'
+
+LibratoMetricsClient::Cli.new(ARGV).run!
