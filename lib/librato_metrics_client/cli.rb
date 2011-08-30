@@ -1,4 +1,8 @@
 require 'optparse'
+require 'librato_metrics_client/plugin_definition'
+require 'librato_metrics_client/plugin'
+require 'librato_metrics_client/client'
+require 'librato_metrics_client/metrics'
 
 module LibratoMetricsClient
   class Cli
@@ -8,9 +12,6 @@ module LibratoMetricsClient
     end
 
     def run!
-      # Take system args off
-      @system_args << @args.shift while @args.first && @args.first[0..0] == '-'
-
       opts = OptionParser.new do |opts|
         opts.on("-u", "--user USER", "Set username for Librato Metrics") do |v|
           @user = v
@@ -22,7 +23,7 @@ module LibratoMetricsClient
           help
         end
       end
-      opts.parse!(@system_args)
+      @args = opts.order(@args)
 
       case command = @args.shift
       when 'help', nil, ''
@@ -56,25 +57,29 @@ module LibratoMetricsClient
     end
 
     def probe_run
-      unless filename = @args.shift
-        help_probe
-      end
-
       settings = {}
       opts = OptionParser.new do |opts|
         opts.on("-s", "--set NAME=VALUE", "Set a variable for the probe") do |s|
           k, v = s.split('=', 2)
           settings[k] = v
         end
+        opts.on("--prefix PREFIX", "Prefix for submitted metrics") do |v|
+          @prefix = v
+        end
       end
-      opts.parse!(@args)
+      @args = opts.order!(@args)
+
+      unless filename = @args.shift
+        help_probe
+      end
 
       definition = PluginDefinition.new(filename)
-      metrics    = Metrics.new
+      metrics    = Metrics.new(@prefix)
       definition.run(metrics, settings)
 
       client = Client.new(@user || ENV['LIBRATO_USER'], @token || ENV['LIBRATO_TOKEN'])
-      client.post(metrics.metrics)
+
+      response = client.post(metrics.metrics)
     end
 
     def probe
@@ -89,7 +94,6 @@ module LibratoMetricsClient
     def plugin
       case command = @args.shift
       when 'run'
-
       end
 
       opts = OptionParser.new do |opts|

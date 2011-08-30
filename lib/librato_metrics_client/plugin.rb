@@ -2,19 +2,20 @@ module LibratoMetricsClient
   class Plugin
     # From Mr. Ola Bini:
     # http://ola-bini.blogspot.com/2007/07/objectspace-to-have-or-not-to-have.html
-    def self.extended(klazz)
-      (class <<klazz; self; end).send(:attr_accessor, :subclasses)
-      (class <<klazz; self; end).send(:define_method, :inherited) do |clzz|
-        klazz.subclasses << clzz
-        super
-      end
-      klazz.subclasses = []
+    class << self
+      attr_accessor :subclasses
+    end
+    self.subclasses = []
+
+    def self.inherited(klazz)
+      self.subclasses << klazz
+      super
     end
 
     def self.load(file)
-      before = subclasses.dup
+      before = self.subclasses.dup
       Kernel.load file
-      added = subclasses - before
+      added = self.subclasses - before
       added.first
     end
 

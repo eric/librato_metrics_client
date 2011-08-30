@@ -44,6 +44,7 @@ Gem::Specification.new do |s|
   ## that are needed for an end user to actually USE your code.
   s.add_dependency('faraday', '~> 0.7')
   s.add_dependency('faraday_middleware', '~> 0.7')
+  s.add_dependency('yajl-ruby', '~> 0.8')
 
   ## List your development dependencies here. Development dependencies are
   ## those that are only needed during development
