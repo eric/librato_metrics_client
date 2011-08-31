@@ -13,6 +13,15 @@ There are a few goals:
 
 We'll see how it goes.
 
+## Installing
+
+Right now there is no released gem. In the mean time, you can download and 
+run it locally with:
+
+    $ git clone https://eric@github.com/eric/librato_metrics_client.git
+    $ bundle
+
+
 ## Working Commands
 
 Add your credentials:
