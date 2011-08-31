@@ -15,11 +15,21 @@ We'll see how it goes.
 
 ## Working Commands
 
-Run a probe:
+Add your credentials:
 
-    $ bundle exec librato_metrics_client -u email@gmail.com \
-        -t 9cbedb645496b9a6b13c63c4bc3d1b95f02b3dbb probe run \
-        --prefix=disk_usage plugins/disk_usage.rb
+    $ bundle exec librato_metrics_client config user.email email@gmail.com
+    $ bundle exec librato_metrics_client config user.token \
+        9cbedb645496b9a6b13c63c4bc3d1b95f02b3dbb
+
+Run a probe once:
+
+    $ bundle exec librato_metrics_client probe run --prefix=disk_usage \
+        plugins/disk_usage.rb
+
+Run a probe every 10 seconds:
+
+    $ bundle exec librato_metrics_client probe run --prefix=disk_usage \
+        --interval=10 plugins/disk_usage.rb
 
 
 ## Possible Future Example Commands
@@ -28,7 +38,7 @@ Run a probe:
 Install a plugin:
 
     $ librato_metrics_client plugin add http_check plugins/http_check.rb
-    
+
 Add a check for the plugin:
 
     $ librato_metrics_client probe add local_check http_check -s host=localhost
