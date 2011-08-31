@@ -23,13 +23,17 @@ Add your credentials:
 
 Run a probe once in the foreground:
 
-    $ bundle exec librato_metrics_client probe run --prefix=disk_usage \
-        plugins/disk_usage.rb
+    $ bundle exec librato_metrics_client probe run plugins/disk_usage.rb
 
 Run a probe every 10 seconds in the foreground:
 
+    $ bundle exec librato_metrics_client probe run --interval=10 \
+        plugins/disk_usage.rb
+
+Set the prefix for the metrics that are generated:
+
     $ bundle exec librato_metrics_client probe run --prefix=disk_usage \
-        --interval=10 plugins/disk_usage.rb
+        plugins/disk_usage.rb
 
 
 ## Possible Future Example Commands
