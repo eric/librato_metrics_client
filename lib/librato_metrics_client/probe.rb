@@ -4,6 +4,10 @@ module LibratoMetricsClient
       @plugin_definition = plugin_definition
       @prefix            = prefix
       @settings          = settings
+
+      if !@prefix || @prefix == ''
+        @prefix = @plugin_definition.name
+      end
     end
 
     def run
