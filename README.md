@@ -26,23 +26,21 @@ run it locally with:
 
 Add your credentials:
 
-    $ bundle exec librato_metrics_client config user.email email@gmail.com
-    $ bundle exec librato_metrics_client config user.token \
+    $ bundle exec lmetrics config user.email email@gmail.com
+    $ bundle exec lmetrics config user.token \
         9cbedb645496b9a6b13c63c4bc3d1b95f02b3dbb
 
 Run a probe once in the foreground:
 
-    $ bundle exec librato_metrics_client probe run plugins/disk_usage.rb
+    $ bundle exec lmetrics probe run plugins/disk_usage.rb
 
 Run a probe every 10 seconds in the foreground:
 
-    $ bundle exec librato_metrics_client probe run --interval=10 \
-        plugins/disk_usage.rb
+    $ bundle exec lmetrics probe run --interval=10 plugins/disk_usage.rb
 
 Set the prefix for the metrics that are generated:
 
-    $ bundle exec librato_metrics_client probe run --prefix=disk_usage \
-        plugins/disk_usage.rb
+    $ bundle exec lmetrics probe run --prefix=disk_usage plugins/disk_usage.rb
 
 
 ## Possible Future Example Commands
@@ -50,13 +48,13 @@ Set the prefix for the metrics that are generated:
 
 Install a plugin:
 
-    $ librato_metrics_client plugin add http_check plugins/http_check.rb
+    $ lmetrics plugin add http_check plugins/http_check.rb
 
 Add a check for the plugin:
 
-    $ librato_metrics_client probe add local_check http_check -s host=localhost
+    $ lmetrics probe add local_check http_check -s host=localhost
 
 Run the agent:
 
-    $ librato_metrics_client agent run
+    $ lmetrics agent run
 
