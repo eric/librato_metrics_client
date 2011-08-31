@@ -1,23 +1,22 @@
 require 'optparse'
-require 'librato_metrics_client/plugin_definition'
-require 'librato_metrics_client/plugin'
-require 'librato_metrics_client/client'
-require 'librato_metrics_client/metrics'
 
 module LibratoMetricsClient
   class Cli
     def initialize(args)
       @system_args = []
       @args        = args.dup
+      @config      = LibratoMetricsClient::Config.new
+    end
+
+    def program_name
+      File.basename($0)
     end
 
     def run!
       opts = OptionParser.new do |opts|
-        opts.on("-u", "--user USER", "Set username for Librato Metrics") do |v|
-          @user = v
-        end
-        opts.on("-t", "--token TOKEN", "Set token for Librato Metrics") do |v|
-          @token = v
+        opts.on("-c <name>=<value>", "Pass a configuration parameter to the command") do |c|
+          k, v = c.split('=', 2)
+          @config.set(:runtime, k, v)
         end
         opts.on("-h", "--help", "This help message") do
           help
@@ -28,6 +27,8 @@ module LibratoMetricsClient
       case command = @args.shift
       when 'help', nil, ''
         help
+      when 'config'
+        config
       when 'plugin'
         plugin
       when 'probe'
@@ -37,7 +38,7 @@ module LibratoMetricsClient
 
     def help
       puts unindent(<<-EOF)
-        Usage: #{File.basename($0)} [-u|--user=<username>] [-t|--token=<token>] <command> [<args>]
+        Usage: #{program_name} [-c <name>=<value>] <command> [<args>]
 
         The available commands are:
           probe       Add, remove and manage probes
@@ -56,6 +57,43 @@ module LibratoMetricsClient
       exit(1)
     end
 
+    def help_config
+      puts unindent(<<-EOF)
+        Usage: #{File.basename($0)} config [options] [<key>] [[<value>]]
+
+        Action
+           --get        get value
+           --list       list all values
+      EOF
+      exit(1)
+    end
+
+    def config
+      operation = nil
+      opts = OptionParser.new do |opts|
+        opts.on("--get", "get value") do
+          operation = :get
+        end
+        opts.on("--list", "list all values") do |v|
+          operation = :list
+        end
+      end
+      @args = opts.order!(@args)
+
+      if (!operation || operation == :get) && @args.length == 1
+        puts @config.get(@args[0])
+      elsif !operation && @args.length == 2
+        @config.set(:global, @args[0], @args[1])
+        @config.save
+      elsif operation == :list
+        @config.flatten.each_pair do |key, value|
+          puts "#{key}=#{value}"
+        end
+      else
+        help_config
+      end
+    end
+
     def probe_run
       settings = {}
       opts = OptionParser.new do |opts|
@@ -66,6 +104,11 @@ module LibratoMetricsClient
         opts.on("--prefix PREFIX", "Prefix for submitted metrics") do |v|
           @prefix = v
         end
+
+        opts.on("--interval INTERVAL", Integer, "interval for running probe") do |v|
+          @interval = v
+        end
+
       end
       @args = opts.order!(@args)
 
@@ -73,13 +116,14 @@ module LibratoMetricsClient
         help_probe
       end
 
+      agent = Agent.new(@config)
       definition = PluginDefinition.new(filename)
-      metrics    = Metrics.new(@prefix)
-      definition.run(metrics, settings)
+      probe = Probe.new(definition, @prefix, settings)
+      agent.probe(probe)
 
-      client = Client.new(@user || ENV['LIBRATO_USER'], @token || ENV['LIBRATO_TOKEN'])
+      agent.interval = @interval if @interval
 
-      response = client.post(metrics.metrics)
+      agent.run
     end
 
     def probe

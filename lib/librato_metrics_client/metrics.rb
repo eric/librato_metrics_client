@@ -1,24 +1,23 @@
 module LibratoMetricsClient
   class Metrics
-    attr_reader :metrics
+    attr_reader :gauges, :counters
 
     def initialize(prefix)
-      @prefix  = prefix
-      @metrics = {}
+      @prefix   = prefix
+      @gauges   = []
+      @counters = []
     end
 
     def gauge(name, value, options = {})
       metric = options.merge(:name => metric_name(name), :value => value)
       metric[:measure_time] ||= Time.now.to_i
-
-      (@metrics[:gauges] ||= []) << metric
+      @gauges << metric
     end
 
     def counter(name, value, options = {})
       metric = options.merge(:name => metric_name(name), :value => value)
       metric[:measure_time] ||= Time.now.to_i
-
-      (@metrics[:counters] ||= []) << metric
+      @counters << metric
     end
 
     def metric_name(name)
