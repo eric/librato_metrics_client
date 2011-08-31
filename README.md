@@ -19,7 +19,7 @@ Right now there is no released gem. In the mean time, you can download and
 run it locally with:
 
     $ git clone https://eric@github.com/eric/librato_metrics_client.git
-    $ bundle
+    $ cd librato_metrics_client && bundle
 
 
 ## Working Commands
