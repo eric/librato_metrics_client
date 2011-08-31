@@ -21,12 +21,12 @@ Add your credentials:
     $ bundle exec librato_metrics_client config user.token \
         9cbedb645496b9a6b13c63c4bc3d1b95f02b3dbb
 
-Run a probe once:
+Run a probe once in the foreground:
 
     $ bundle exec librato_metrics_client probe run --prefix=disk_usage \
         plugins/disk_usage.rb
 
-Run a probe every 10 seconds:
+Run a probe every 10 seconds in the foreground:
 
     $ bundle exec librato_metrics_client probe run --prefix=disk_usage \
         --interval=10 plugins/disk_usage.rb
@@ -46,9 +46,4 @@ Add a check for the plugin:
 Run the agent:
 
     $ librato_metrics_client agent run
-
-
-Or skip the whole plugin thing and just run an ad-hoc plugin in the foreground:
-
-    $ librato_metrics_client probe run plugins/http_check.rb --interval=5 -s host=localhost
 
